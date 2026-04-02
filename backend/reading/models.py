@@ -4,14 +4,14 @@ from django.conf import settings
 
 class ReadingPassage(models.Model):
     DIFFICULTY_CHOICES = (
-        ('easy', 'Easy'),
-        ('medium', 'Medium'),
-        ('hard', 'Hard'),
+        ('beginner', 'Beginner'),
+        ('intermediate', 'Intermediate'),
+        ('pro', 'Pro'),
     )
 
     title = models.CharField(max_length=255)
     passage_text = models.TextField()
-    difficulty = models.CharField(max_length=10, choices=DIFFICULTY_CHOICES, default='medium')
+    difficulty = models.CharField(max_length=15, choices=DIFFICULTY_CHOICES, default='intermediate')
     category = models.CharField(max_length=100, blank=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='created_passages')
     created_at = models.DateTimeField(auto_now_add=True)

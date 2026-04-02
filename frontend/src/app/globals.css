@@ -3,8 +3,13 @@
 @tailwind utilities;
 
 @layer base {
-  body {
+  html, body {
     @apply text-gray-900 antialiased;
+    background-color: #f0f2f5;
+  }
+
+  ::selection {
+    @apply bg-primary-100 text-primary-900;
   }
 }
 
@@ -13,24 +18,27 @@
     @apply bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900;
   }
 
-  .glass-card {
-    @apply bg-white/80 backdrop-blur-sm border border-white/20 rounded-xl shadow-lg;
+  .glass {
+    @apply bg-white/80 backdrop-blur-xl border border-white/20;
+  }
+
+  .glass-dark {
+    @apply bg-gray-900/80 backdrop-blur-xl border border-white/10;
   }
 }
 
-::-webkit-scrollbar {
-  width: 6px;
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* Smooth transitions for all interactive elements */
+a, button, input, select, textarea {
+  @apply transition-colors duration-200;
 }
 
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+/* Focus visible ring */
+*:focus-visible {
+  @apply outline-none ring-2 ring-primary-500/40 ring-offset-2;
 }

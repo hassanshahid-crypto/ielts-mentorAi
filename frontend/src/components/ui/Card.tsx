@@ -11,8 +11,8 @@ export function Card({ className, hover, children, ...props }: CardProps) {
   return (
     <div
       className={cn(
-        'bg-white rounded-xl border border-gray-200 shadow-sm',
-        hover && 'hover:shadow-md hover:border-gray-300 transition-all duration-200',
+        'bg-white rounded-2xl border border-gray-100 shadow-sm',
+        hover && 'hover:shadow-soft hover:border-gray-200 hover:-translate-y-0.5 transition-all duration-300',
         className
       )}
       {...props}
@@ -24,7 +24,7 @@ export function Card({ className, hover, children, ...props }: CardProps) {
 
 export function CardHeader({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn('px-6 py-4 border-b border-gray-100', className)} {...props}>
+    <div className={cn('px-6 py-4 border-b border-gray-50', className)} {...props}>
       {children}
     </div>
   )
@@ -32,7 +32,7 @@ export function CardHeader({ className, children, ...props }: HTMLAttributes<HTM
 
 export function CardBody({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn('px-6 py-4', className)} {...props}>
+    <div className={cn('px-6 py-5', className)} {...props}>
       {children}
     </div>
   )
@@ -40,7 +40,7 @@ export function CardBody({ className, children, ...props }: HTMLAttributes<HTMLD
 
 export function CardFooter({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn('px-6 py-4 border-t border-gray-100', className)} {...props}>
+    <div className={cn('px-6 py-4 border-t border-gray-50', className)} {...props}>
       {children}
     </div>
   )

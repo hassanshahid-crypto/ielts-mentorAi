@@ -10,4 +10,5 @@ urlpatterns = [
     path('tests/<int:pk>/submit/', views.ReadingTestSubmitView.as_view(), name='reading-test-submit'),
     path('tests/<int:pk>/result/', views.ReadingTestResultView.as_view(), name='reading-test-result'),
     path('tests/history/', views.ReadingTestHistoryView.as_view(), name='reading-test-history'),
+    path('generate/', views.GenerateReadingPassageView.as_view(), name='reading-generate'),
 ]

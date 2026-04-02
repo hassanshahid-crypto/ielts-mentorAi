@@ -5,6 +5,7 @@ import type {
   SpeakingTest, SpeakingFeedback,
   ReadingPassage, ReadingTest, ReadingTestSubmit,
   DashboardStats, StudentProgress, AdminStudentStats, AdminOverview,
+  PlacementQuestions, PlacementSubmit, PlacementResult,
 } from '@/types'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'
@@ -67,6 +68,19 @@ class ApiClient {
 
   async changePassword(data: { old_password: string; new_password: string }): Promise<{ message: string }> {
     return this.request('/auth/change-password/', { method: 'PUT', body: JSON.stringify(data) })
+  }
+
+  // Placement
+  async getPlacementQuestions(): Promise<PlacementQuestions> {
+    return this.request('/auth/placement/questions/')
+  }
+
+  async submitPlacement(data: PlacementSubmit): Promise<PlacementResult> {
+    return this.request('/auth/placement/submit/', { method: 'POST', body: JSON.stringify(data) })
+  }
+
+  async checkProgression(): Promise<any> {
+    return this.request('/auth/progression/')
   }
 
   // Writing

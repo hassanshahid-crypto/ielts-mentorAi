@@ -50,47 +50,51 @@ export default function ProfilePage() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-2xl mx-auto space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
+      <div className="max-w-2xl mx-auto space-y-8 animate-fade-in">
+        <h1 className="text-2xl font-bold font-display text-gray-900">Profile Settings</h1>
 
-        <Card>
-          <CardHeader className="flex items-center space-x-2">
-            <User className="h-5 w-5 text-gray-500" />
-            <h2 className="font-semibold text-gray-900">Personal Information</h2>
+        <Card className="rounded-2xl border-gray-100 shadow-soft">
+          <CardHeader className="flex items-center space-x-3 px-6 pt-6">
+            <div className="bg-primary-50 h-10 w-10 rounded-xl flex items-center justify-center">
+              <User className="h-5 w-5 text-primary-600" />
+            </div>
+            <h2 className="font-semibold font-display text-gray-900 text-lg">Personal Information</h2>
           </CardHeader>
-          <CardBody>
-            <form onSubmit={saveProfile} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+          <CardBody className="px-6 pb-6">
+            <form onSubmit={saveProfile} className="space-y-5">
+              <div className="grid grid-cols-2 gap-5">
                 <Input label="First Name" value={profileForm.first_name} onChange={(e) => setProfileForm({ ...profileForm, first_name: e.target.value })} />
                 <Input label="Last Name" value={profileForm.last_name} onChange={(e) => setProfileForm({ ...profileForm, last_name: e.target.value })} />
               </div>
               <Input label="Email" value={user?.email || ''} disabled helperText="Email cannot be changed" />
               <Input label="Phone" value={profileForm.phone} onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })} />
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Bio</label>
                 <textarea
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none"
-                  rows={3}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 focus:outline-none hover:border-gray-300 transition-all text-sm"
+                  rows={4}
                   value={profileForm.bio}
                   onChange={(e) => setProfileForm({ ...profileForm, bio: e.target.value })}
                   placeholder="Tell us about yourself..."
                 />
               </div>
-              <Button type="submit" loading={saving}>Save Changes</Button>
+              <Button type="submit" loading={saving} className="rounded-xl">Save Changes</Button>
             </form>
           </CardBody>
         </Card>
 
-        <Card>
-          <CardHeader className="flex items-center space-x-2">
-            <Lock className="h-5 w-5 text-gray-500" />
-            <h2 className="font-semibold text-gray-900">Change Password</h2>
+        <Card className="rounded-2xl border-gray-100 shadow-soft">
+          <CardHeader className="flex items-center space-x-3 px-6 pt-6">
+            <div className="bg-amber-50 h-10 w-10 rounded-xl flex items-center justify-center">
+              <Lock className="h-5 w-5 text-amber-600" />
+            </div>
+            <h2 className="font-semibold font-display text-gray-900 text-lg">Change Password</h2>
           </CardHeader>
-          <CardBody>
-            <form onSubmit={changePassword} className="space-y-4">
+          <CardBody className="px-6 pb-6">
+            <form onSubmit={changePassword} className="space-y-5">
               <Input label="Current Password" type="password" value={passwordForm.old_password} onChange={(e) => setPasswordForm({ ...passwordForm, old_password: e.target.value })} required />
               <Input label="New Password" type="password" value={passwordForm.new_password} onChange={(e) => setPasswordForm({ ...passwordForm, new_password: e.target.value })} required />
-              <Button type="submit" loading={changingPw} variant="outline">Change Password</Button>
+              <Button type="submit" loading={changingPw} variant="outline" className="rounded-xl">Change Password</Button>
             </form>
           </CardBody>
         </Card>

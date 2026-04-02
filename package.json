@@ -1,0 +1,15 @@
+{
+  "name": "ielts-mentor",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --names backend,frontend --prefix-colors blue,green \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && venv\\Scripts\\python manage.py runserver",
+    "dev:frontend": "cd frontend && npm run dev"
+  },
+  "dependencies": {
+    "motion": "^12.38.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}

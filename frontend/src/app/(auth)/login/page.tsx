@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
+import { getUser } from '@/lib/auth'
 import { Button, Input } from '@/components/ui'
 import { BookOpen } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -21,7 +22,12 @@ export default function LoginPage() {
     try {
       await login({ email, password })
       toast.success('Login successful!')
-      router.push('/dashboard')
+      const userData = getUser()
+      if (userData?.role === 'student' && !userData?.has_completed_placement) {
+        router.push('/onboarding')
+      } else {
+        router.push('/dashboard')
+      }
     } catch (err: any) {
       toast.error(err.message || 'Invalid credentials')
     } finally {
@@ -30,17 +36,20 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="w-full max-w-md">
-      <div className="bg-white rounded-2xl shadow-xl p-8">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center h-12 w-12 bg-primary-100 rounded-xl mb-4">
-            <BookOpen className="h-6 w-6 text-primary-600" />
+    <div className="w-full max-w-md animate-fade-in">
+      {/* Decorative element */}
+      <div className="absolute top-8 right-8 w-20 h-20 bg-primary-200/30 rounded-full blur-2xl pointer-events-none hidden lg:block" />
+
+      <div className="bg-white rounded-2xl shadow-soft-lg p-10">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center h-14 w-14 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl mb-5 shadow-soft">
+            <BookOpen className="h-7 w-7 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Welcome Back</h1>
-          <p className="text-gray-500 mt-1">Sign in to your IELTS Mentor account</p>
+          <h1 className="font-display text-3xl font-bold text-gray-900">Welcome Back</h1>
+          <p className="text-gray-500 mt-2 text-sm">Sign in to your IELTS Mentor account</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <Input
             label="Email"
             type="email"
@@ -57,12 +66,14 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <Button type="submit" className="w-full" size="lg" loading={loading}>
-            Sign In
-          </Button>
+          <div className="pt-2">
+            <Button type="submit" className="w-full" size="lg" loading={loading}>
+              Sign In
+            </Button>
+          </div>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-gray-500 mt-8">
           Don&apos;t have an account?{' '}
           <Link href="/register" className="text-primary-600 font-medium hover:underline">Register</Link>
         </p>

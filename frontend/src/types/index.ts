@@ -8,6 +8,8 @@ export interface User {
   phone?: string
   bio?: string
   profile_image?: string
+  difficulty_level: 'beginner' | 'intermediate' | 'pro'
+  has_completed_placement: boolean
   created_at: string
   updated_at: string
 }
@@ -27,7 +29,6 @@ export interface RegisterRequest {
   email: string
   password: string
   password_confirm: string
-  role: 'student' | 'admin'
   first_name?: string
   last_name?: string
 }
@@ -116,7 +117,7 @@ export interface ReadingPassage {
   id: number
   title: string
   passage_text: string
-  difficulty: 'easy' | 'medium' | 'hard'
+  difficulty: 'beginner' | 'intermediate' | 'pro'
   category: string
   question_count?: number
   questions?: ReadingQuestion[]
@@ -201,4 +202,34 @@ export interface AdminOverview {
   avg_writing_band: number
   avg_speaking_band: number
   avg_reading_score: number
+}
+
+export interface PlacementReadingQuestion {
+  id: string
+  question: string
+  options: string[]
+  correct_answer: string
+}
+
+export interface PlacementQuestions {
+  reading: {
+    passage: string
+    questions: PlacementReadingQuestion[]
+  }
+  writing_prompt: string
+  speaking_prompt: string
+}
+
+export interface PlacementSubmit {
+  reading_answers: Record<string, string>
+  writing_text: string
+  speaking_transcript: string
+}
+
+export interface PlacementResult {
+  difficulty_level: 'beginner' | 'intermediate' | 'pro'
+  reading_score: number
+  writing_score: number
+  speaking_score: number
+  avg_score: number
 }

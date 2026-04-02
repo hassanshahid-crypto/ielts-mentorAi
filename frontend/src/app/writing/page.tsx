@@ -6,10 +6,12 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { api } from '@/lib/api'
 import { Card, CardBody, Badge, Button, Spinner } from '@/components/ui'
 import { formatDate, formatBandScore, getBandBgColor } from '@/lib/utils'
+import { useAuth } from '@/context/AuthContext'
 import { PenTool, Plus, Filter } from 'lucide-react'
 import type { WritingTest } from '@/types'
 
 export default function WritingPage() {
+  const { user } = useAuth()
   const [tests, setTests] = useState<WritingTest[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>('')
@@ -20,21 +22,23 @@ export default function WritingPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 animate-fade-in">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Writing Practice</h1>
-            <p className="text-gray-500 mt-1">Practice IELTS Writing Task 1 & Task 2</p>
+            <h1 className="text-2xl font-display font-bold text-gray-900">Writing Practice</h1>
+            <p className="text-gray-500 mt-1">{user?.role === 'admin' ? 'Manage all writing tests' : 'Your IELTS Writing practice history'}</p>
           </div>
-          <Link href="/writing/new">
-            <Button><Plus className="h-4 w-4 mr-2" /> New Writing Test</Button>
-          </Link>
+          {user?.role === 'student' && (
+            <Link href="/writing/new">
+              <Button className="rounded-xl"><Plus className="h-4 w-4 mr-2" /> Practice Now</Button>
+            </Link>
+          )}
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-3">
           <Filter className="h-4 w-4 text-gray-400" />
           <select
-            className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-primary-500"
+            className="bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 focus:outline-none hover:border-gray-300 transition-all"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
           >
@@ -47,28 +51,33 @@ export default function WritingPage() {
         {loading ? (
           <div className="flex justify-center py-20"><Spinner size="lg" /></div>
         ) : tests.length === 0 ? (
-          <Card>
-            <CardBody className="text-center py-16">
-              <PenTool className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Writing Tests Yet</h3>
-              <p className="text-gray-500 mb-4">Start your first writing practice to get AI feedback</p>
-              <Link href="/writing/new"><Button>Start Writing Test</Button></Link>
+          <Card className="rounded-2xl border-gray-100 shadow-soft">
+            <CardBody className="text-center py-20">
+              <div className="h-16 w-16 bg-primary-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                <PenTool className="h-8 w-8 text-primary-400" />
+              </div>
+              <h3 className="text-lg font-display font-semibold text-gray-900 mb-2">No Writing Tests Yet</h3>
+              <p className="text-gray-400 mb-6 max-w-sm mx-auto">Start your first writing practice to get AI feedback on your IELTS essays</p>
+              <Link href="/writing/new"><Button className="rounded-xl">Start Writing Test</Button></Link>
             </CardBody>
           </Card>
         ) : (
-          <div className="grid gap-4">
+          <div className="grid gap-4 animate-slide-up">
             {tests.map((test) => (
               <Link key={test.id} href={`/writing/${test.id}`}>
-                <Card hover className="cursor-pointer">
+                <Card hover className="cursor-pointer rounded-2xl border-gray-100 shadow-soft hover:shadow-soft-lg transition-all">
                   <CardBody className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                      <div className="h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <PenTool className="h-5 w-5 text-blue-600" />
+                      <div className="h-11 w-11 bg-primary-50 rounded-xl flex items-center justify-center">
+                        <PenTool className="h-5 w-5 text-primary-600" />
                       </div>
                       <div>
                         <div className="flex items-center space-x-2">
                           <h3 className="font-semibold text-gray-900">{test.task_type === 'task1' ? 'Task 1' : 'Task 2'}</h3>
-                          <Badge variant={test.status === 'evaluated' ? 'success' : test.status === 'submitted' ? 'info' : 'default'}>
+                          <Badge
+                            variant={test.status === 'evaluated' ? 'success' : test.status === 'submitted' ? 'info' : 'default'}
+                            className="rounded-lg ring-1 ring-inset"
+                          >
                             {test.status}
                           </Badge>
                         </div>

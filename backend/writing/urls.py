@@ -6,4 +6,5 @@ urlpatterns = [
     path('tests/<int:pk>/', views.WritingTestDetailView.as_view(), name='writing-test-detail'),
     path('tests/<int:pk>/submit/', views.WritingTestSubmitView.as_view(), name='writing-test-submit'),
     path('tests/<int:pk>/feedback/', views.WritingFeedbackView.as_view(), name='writing-feedback'),
+    path('generate-topic/', views.GenerateWritingTopicView.as_view(), name='writing-generate-topic'),
 ]

@@ -22,7 +22,7 @@ def evaluate_speaking_with_ai(transcript, topic, part_number):
         import google.generativeai as genai
 
         genai.configure(api_key=settings.GEMINI_API_KEY)
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-2.5-flash')
 
         prompt = f"""You are an expert IELTS examiner. Evaluate the following IELTS Speaking Part {part_number} transcript.
 
@@ -76,7 +76,10 @@ class SpeakingTestListCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        tests = SpeakingTest.objects.filter(user=request.user)
+        if request.user.role == 'admin':
+            tests = SpeakingTest.objects.all()
+        else:
+            tests = SpeakingTest.objects.filter(user=request.user)
         part = request.query_params.get('part')
         if part:
             tests = tests.filter(part_number=part)
@@ -94,13 +97,26 @@ class SpeakingTestListCreateView(APIView):
 class SpeakingTestDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
+    def _get_test(self, request, pk):
+        if request.user.role == 'admin':
+            return get_object_or_404(SpeakingTest, pk=pk)
+        return get_object_or_404(SpeakingTest, pk=pk, user=request.user)
+
     def get(self, request, pk):
-        test = get_object_or_404(SpeakingTest, pk=pk, user=request.user)
+        test = self._get_test(request, pk)
         serializer = SpeakingTestSerializer(test)
         return Response(serializer.data)
 
+    def put(self, request, pk):
+        test = self._get_test(request, pk)
+        serializer = SpeakingTestSerializer(test, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def delete(self, request, pk):
-        test = get_object_or_404(SpeakingTest, pk=pk, user=request.user)
+        test = self._get_test(request, pk)
         test.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -140,7 +156,14 @@ class SpeakingTestSubmitView(APIView):
             test.status = 'evaluated'
             test.save()
 
-            return Response(SpeakingTestSerializer(test).data)
+            # Check difficulty progression
+            from accounts.progression import check_and_promote
+            progression = check_and_promote(request.user)
+
+            data = SpeakingTestSerializer(test).data
+            if progression:
+                data['progression'] = progression
+            return Response(data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -167,8 +190,31 @@ class SpeakingFeedbackView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
-        test = get_object_or_404(SpeakingTest, pk=pk, user=request.user)
+        if request.user.role == 'admin':
+            test = get_object_or_404(SpeakingTest, pk=pk)
+        else:
+            test = get_object_or_404(SpeakingTest, pk=pk, user=request.user)
         if not hasattr(test, 'feedback'):
             return Response({'error': 'No feedback available.'}, status=status.HTTP_404_NOT_FOUND)
         serializer = SpeakingFeedbackSerializer(test.feedback)
         return Response(serializer.data)
+
+
+class GenerateSpeakingTopicView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        part_number = request.data.get('part_number', 1)
+        difficulty = request.data.get('difficulty', 'intermediate')
+        try:
+            import google.generativeai as genai
+            genai.configure(api_key=settings.GEMINI_API_KEY)
+            model = genai.GenerativeModel('gemini-2.5-flash')
+            prompt = f"""Generate a single IELTS Speaking Part {part_number} topic for a {difficulty} level student.
+Part 1: Short personal questions. Part 2: Long turn with cue card. Part 3: Abstract discussion questions.
+Difficulty: beginner=simple everyday, intermediate=standard IELTS, pro=complex analytical.
+Return ONLY the topic text."""
+            response = model.generate_content(prompt)
+            return Response({'topic': response.text.strip()})
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -9,7 +9,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password', 'password_confirm', 'role', 'first_name', 'last_name']
+        fields = ['id', 'username', 'email', 'password', 'password_confirm', 'first_name', 'last_name']
 
     def validate(self, data):
         if data['password'] != data['password_confirm']:
@@ -40,8 +40,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role',
-                  'phone', 'bio', 'profile_image', 'created_at', 'updated_at']
-        read_only_fields = ['id', 'email', 'role', 'created_at', 'updated_at']
+                  'phone', 'bio', 'profile_image', 'difficulty_level',
+                  'has_completed_placement', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'email', 'role', 'has_completed_placement', 'created_at', 'updated_at']
 
 
 class ChangePasswordSerializer(serializers.Serializer):
