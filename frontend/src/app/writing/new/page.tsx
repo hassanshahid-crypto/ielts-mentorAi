@@ -70,8 +70,23 @@ export default function NewWritingTestPage() {
   }, [user, router])
 
   useEffect(() => {
-    const topics = WRITING_TOPICS[difficulty]?.[taskType] || WRITING_TOPICS['intermediate'][taskType]
-    setTopic(topics[Math.floor(Math.random() * topics.length)])
+    let cancelled = false
+    api.getWritingTemplates({ task_type: taskType, difficulty })
+      .then((templates) => {
+        if (cancelled) return
+        if (templates && templates.length > 0) {
+          const pick = templates[Math.floor(Math.random() * templates.length)]
+          setTopic(pick.topic)
+        } else {
+          const fallback = WRITING_TOPICS[difficulty]?.[taskType] || WRITING_TOPICS['intermediate'][taskType]
+          setTopic(fallback[Math.floor(Math.random() * fallback.length)])
+        }
+      })
+      .catch(() => {
+        const fallback = WRITING_TOPICS[difficulty]?.[taskType] || WRITING_TOPICS['intermediate'][taskType]
+        setTopic(fallback[Math.floor(Math.random() * fallback.length)])
+      })
+    return () => { cancelled = true }
   }, [taskType, difficulty])
 
   const startTest = async () => {

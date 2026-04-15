@@ -11,9 +11,10 @@ import {
 
 const studentLinks = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/writing', label: 'Practice Tests', icon: PenTool },
-  { href: '/speaking', label: 'Writing Lab', icon: Mic },
-  { href: '/reading', label: 'Speaking Club', icon: BookOpen },
+  
+  { href: '/writing', label: 'Writing Lab', icon: PenTool },
+  { href: '/speaking', label: 'Speaking Club', icon: Mic },
+  { href: '/reading', label: 'Reading Practice', icon: BookOpen },
   { href: '/results', label: 'Vocabulary', icon: Trophy },
   { href: '/performance', label: 'Performance', icon: BarChart3 },
 ]
@@ -24,7 +25,6 @@ const adminLinks = [
   { href: '/admin/writing', label: 'Writing Tests', icon: PenTool },
   { href: '/admin/speaking', label: 'Speaking Tests', icon: Mic },
   { href: '/admin/reading', label: 'Reading Tests', icon: BookOpen },
-  { href: '/profile', label: 'Settings', icon: Settings },
 ]
 
 export function Sidebar() {

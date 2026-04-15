@@ -23,6 +23,48 @@ export default function AdminSpeakingPage() {
   const [aiGenerating, setAiGenerating] = useState(false)
   const [form, setForm] = useState({ part_number: 1, topic: '', difficulty: 'intermediate' })
 
+  // Full 3-part test set creation
+  const [showSetModal, setShowSetModal] = useState(false)
+  const [testSetForm, setTestSetForm] = useState({ difficulty: 'intermediate', theme: '', part1: '', part2: '', part3: '' })
+  const [setGenerating, setSetGenerating] = useState(false)
+  const [savingSet, setSavingSet] = useState(false)
+
+  const openSetCreate = () => {
+    setTestSetForm({ difficulty: 'intermediate', theme: '', part1: '', part2: '', part3: '' })
+    setShowSetModal(true)
+  }
+
+  const generateFullSet = async () => {
+    setSetGenerating(true)
+    try {
+      const data = await api.generateSpeakingTestSet(testSetForm.difficulty)
+      setTestSetForm((prev) => ({ ...prev, theme: data.theme || '', part1: data.part1 || '', part2: data.part2 || '', part3: data.part3 || '' }))
+      toast.success('AI generated a 3-part test!')
+    } catch (err: any) {
+      toast.error(err.message || 'AI generation failed.')
+    } finally {
+      setSetGenerating(false)
+    }
+  }
+
+  const saveFullSet = async () => {
+    if (!testSetForm.part1.trim() || !testSetForm.part2.trim() || !testSetForm.part3.trim()) {
+      toast.error('All three parts are required.')
+      return
+    }
+    setSavingSet(true)
+    try {
+      await api.createSpeakingTestSet(testSetForm)
+      toast.success('3-part speaking test created!')
+      setShowSetModal(false)
+      loadTests()
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to save test set.')
+    } finally {
+      setSavingSet(false)
+    }
+  }
+
   const loadTests = () => {
     setLoading(true)
     api.getSpeakingTests(filter ? Number(filter) : undefined).then(setTests).catch(console.error).finally(() => setLoading(false))
@@ -38,7 +80,7 @@ export default function AdminSpeakingPage() {
 
   const openEdit = (test: SpeakingTest) => {
     setEditingTest(test)
-    setForm({ part_number: test.part_number, topic: test.topic, difficulty: 'intermediate' })
+    setForm({ part_number: test.part_number, topic: test.topic, difficulty: (test as any).difficulty || 'intermediate' })
     setShowModal(true)
   }
 
@@ -72,12 +114,12 @@ export default function AdminSpeakingPage() {
         const res = await fetch(`${API}/speaking/tests/${editingTest.id}/`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
-          body: JSON.stringify({ topic: form.topic, part_number: form.part_number }),
+          body: JSON.stringify({ topic: form.topic, part_number: form.part_number, difficulty: form.difficulty }),
         })
         if (res.ok) toast.success('Test updated!')
         else toast.error('Failed to update')
       } else {
-        await api.createSpeakingTest({ topic: form.topic, part_number: form.part_number })
+        await api.createSpeakingTest({ topic: form.topic, part_number: form.part_number, difficulty: form.difficulty } as any)
         toast.success('Speaking test created!')
       }
       setShowModal(false)
@@ -106,14 +148,19 @@ export default function AdminSpeakingPage() {
   return (
     <>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="min-w-0">
             <h1 className="text-2xl font-bold text-gray-900">Manage Speaking Tests</h1>
             <p className="text-gray-500 mt-1">Create, edit, and manage speaking test topics</p>
           </div>
-          <Button variant="secondary" onClick={openCreate}>
-            <Plus className="h-4 w-4 mr-2" /> Create Speaking Test
-          </Button>
+          <div className="flex gap-2 w-full sm:w-auto flex-shrink-0">
+            <Button variant="outline" onClick={openCreate} className="flex-1 sm:flex-none">
+              <Plus className="h-4 w-4 mr-2" /> Single Part
+            </Button>
+            <Button variant="secondary" onClick={openSetCreate} className="flex-1 sm:flex-none">
+              <Brain className="h-4 w-4 mr-2" /> Create Full 3-Part Test
+            </Button>
+          </div>
         </div>
 
         <div className="flex items-center space-x-2">
@@ -147,9 +194,16 @@ export default function AdminSpeakingPage() {
                       <Mic className="h-5 w-5 text-green-600" />
                     </div>
                     <div className="min-w-0">
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2 flex-wrap">
                         <h3 className="font-semibold text-gray-900">Part {test.part_number}</h3>
-                        <Badge variant={test.status === 'evaluated' ? 'success' : 'warning'}>{test.status}</Badge>
+                        <Badge variant={(test as any).difficulty === 'beginner' ? 'success' : (test as any).difficulty === 'pro' ? 'danger' : 'warning'}>
+                          {(test as any).difficulty || 'intermediate'}
+                        </Badge>
+                        {(test as any).theme && (
+                          <span className="text-[10px] px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded-full font-medium">
+                            {(test as any).theme}
+                          </span>
+                        )}
                       </div>
                       <p className="text-sm text-gray-500 mt-0.5 line-clamp-1">{test.topic}</p>
                       <p className="text-xs text-gray-400">{formatDate(test.created_at)} &bull; by {test.user_name}</p>
@@ -202,6 +256,52 @@ export default function AdminSpeakingPage() {
           <div className="flex justify-end space-x-3">
             <Button variant="outline" onClick={() => setShowModal(false)}>Cancel</Button>
             <Button variant="secondary" onClick={saveTest} loading={saving}>{editingTest ? 'Update' : 'Create'}</Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Full 3-Part Test Set Modal */}
+      <Modal isOpen={showSetModal} onClose={() => setShowSetModal(false)} title="Create Full Speaking Test (3 Parts)">
+        <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Difficulty Level</label>
+              <select className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" value={testSetForm.difficulty} onChange={(e) => setTestSetForm({ ...testSetForm, difficulty: e.target.value })}>
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="pro">Pro</option>
+              </select>
+            </div>
+            <div className="flex items-end">
+              <button onClick={generateFullSet} disabled={setGenerating} className="w-full flex items-center justify-center text-sm text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded-lg font-medium disabled:opacity-50">
+                <Brain className="h-4 w-4 mr-1.5" /> {setGenerating ? 'Generating all 3 parts...' : 'Generate Full Test with AI'}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Theme <span className="text-gray-400 font-normal">(shared across all 3 parts)</span></label>
+            <input className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="e.g. Hometown and Travel" value={testSetForm.theme} onChange={(e) => setTestSetForm({ ...testSetForm, theme: e.target.value })} />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Part 1 — Introduction questions</label>
+            <textarea className="w-full h-20 px-3 py-2 border border-gray-300 rounded-lg text-sm resize-none focus:ring-2 focus:ring-green-500 focus:outline-none" placeholder="3-4 short personal warm-up questions" value={testSetForm.part1} onChange={(e) => setTestSetForm({ ...testSetForm, part1: e.target.value })} />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Part 2 — Long Turn cue card</label>
+            <textarea className="w-full h-28 px-3 py-2 border border-gray-300 rounded-lg text-sm resize-none focus:ring-2 focus:ring-green-500 focus:outline-none" placeholder="Describe ... You should say: ... ... ... and explain ..." value={testSetForm.part2} onChange={(e) => setTestSetForm({ ...testSetForm, part2: e.target.value })} />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Part 3 — Discussion questions <span className="text-gray-400 font-normal">(linked to Part 2)</span></label>
+            <textarea className="w-full h-24 px-3 py-2 border border-gray-300 rounded-lg text-sm resize-none focus:ring-2 focus:ring-green-500 focus:outline-none" placeholder="2-3 abstract discussion questions expanding on Part 2" value={testSetForm.part3} onChange={(e) => setTestSetForm({ ...testSetForm, part3: e.target.value })} />
+          </div>
+
+          <div className="flex justify-end space-x-3 pt-2">
+            <Button variant="outline" onClick={() => setShowSetModal(false)}>Cancel</Button>
+            <Button variant="secondary" onClick={saveFullSet} loading={savingSet}>Save 3-Part Test</Button>
           </div>
         </div>
       </Modal>

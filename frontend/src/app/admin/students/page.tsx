@@ -5,13 +5,15 @@ import Link from 'next/link'
 import { api } from '@/lib/api'
 import { Card, CardBody, Input, Spinner, Badge } from '@/components/ui'
 import { formatDate, formatBandScore } from '@/lib/utils'
-import { Search, Users, ChevronRight } from 'lucide-react'
+import { Search, Users, ChevronRight, Trash2 } from 'lucide-react'
+import toast from 'react-hot-toast'
 import type { AdminStudentStats } from '@/types'
 
 export default function AdminStudentsPage() {
   const [students, setStudents] = useState<AdminStudentStats[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [deletingId, setDeletingId] = useState<number | null>(null)
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -19,6 +21,21 @@ export default function AdminStudentsPage() {
     }, 300)
     return () => clearTimeout(timer)
   }, [search])
+
+  const deleteStudent = async (student: AdminStudentStats) => {
+    const name = student.first_name ? `${student.first_name} ${student.last_name}` : student.username
+    if (!confirm(`Delete ${name}? This permanently removes their account and all their tests.`)) return
+    setDeletingId(student.id)
+    try {
+      await api.adminDeleteStudent(student.id)
+      setStudents((prev) => prev.filter((s) => s.id !== student.id))
+      toast.success(`${name} deleted`)
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to delete student')
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -82,9 +99,19 @@ export default function AdminStudentsPage() {
                     <td className="text-center px-4 py-4 text-sm">{student.speaking_tests}</td>
                     <td className="text-center px-4 py-4 text-sm">{student.reading_tests}</td>
                     <td className="px-4 py-4">
-                      <Link href={`/admin/students/${student.id}`} className="text-primary-600 hover:text-primary-800">
-                        <ChevronRight className="h-5 w-5" />
-                      </Link>
+                      <div className="flex items-center justify-end gap-3">
+                        <button
+                          onClick={() => deleteStudent(student)}
+                          disabled={deletingId === student.id}
+                          className="text-gray-400 hover:text-red-600 transition-colors disabled:opacity-40"
+                          title="Delete student"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                        <Link href={`/admin/students/${student.id}`} className="text-primary-600 hover:text-primary-800">
+                          <ChevronRight className="h-5 w-5" />
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 ))}

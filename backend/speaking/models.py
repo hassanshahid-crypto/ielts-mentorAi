@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.conf import settings
 
@@ -14,9 +15,19 @@ class SpeakingTest(models.Model):
         ('evaluated', 'Evaluated'),
     )
 
+    DIFFICULTY_CHOICES = (
+        ('beginner', 'Beginner'),
+        ('intermediate', 'Intermediate'),
+        ('pro', 'Pro'),
+    )
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='speaking_tests')
     topic = models.TextField()
     part_number = models.IntegerField(choices=PART_CHOICES, default=1)
+    difficulty = models.CharField(max_length=15, choices=DIFFICULTY_CHOICES, default='intermediate')
+    set_id = models.UUIDField(null=True, blank=True, db_index=True, help_text='Groups Part 1/2/3 of the same admin-created test set')
+    theme = models.CharField(max_length=200, blank=True, help_text='Shared theme across the 3 parts of a test set')
+    session_id = models.UUIDField(null=True, blank=True, db_index=True, help_text='Groups the 3 parts of a single student attempt')
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='in_progress')
     transcript = models.TextField(blank=True)
     duration = models.IntegerField(default=0, help_text='Duration in seconds')

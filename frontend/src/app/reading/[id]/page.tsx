@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { api } from '@/lib/api'
+import { useAuth } from '@/context/AuthContext'
 import { Card, CardBody, CardHeader, Badge, Button, Spinner } from '@/components/ui'
 import { formatTime, formatBandScore } from '@/lib/utils'
 import { ArrowLeft, Clock, Send, CheckCircle, XCircle, BookOpen } from 'lucide-react'
@@ -14,6 +15,8 @@ import type { ReadingPassage, ReadingQuestion, ReadingTest } from '@/types'
 export default function ReadingTestPage() {
   const params = useParams()
   const router = useRouter()
+  const { user } = useAuth()
+  const backHref = user?.role === 'admin' ? '/admin/reading' : '/reading'
   const [passage, setPassage] = useState<ReadingPassage | null>(null)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [testId, setTestId] = useState<number | null>(null)
@@ -72,7 +75,7 @@ export default function ReadingTestPage() {
       <DashboardLayout>
         <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
           <div className="flex items-center space-x-3">
-            <Link href="/reading"><Button variant="ghost" size="sm" className="rounded-xl"><ArrowLeft className="h-4 w-4 mr-1" /> Back</Button></Link>
+            <Link href={backHref}><Button variant="ghost" size="sm" className="rounded-xl"><ArrowLeft className="h-4 w-4 mr-1" /> Back</Button></Link>
             <h1 className="text-xl font-bold font-display text-gray-900">Test Results</h1>
           </div>
 

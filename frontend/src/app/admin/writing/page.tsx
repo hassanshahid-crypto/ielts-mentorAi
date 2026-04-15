@@ -38,7 +38,7 @@ export default function AdminWritingPage() {
 
   const openEdit = (test: WritingTest) => {
     setEditingTest(test)
-    setForm({ task_type: test.task_type, topic: test.topic, difficulty: 'intermediate' })
+    setForm({ task_type: test.task_type, topic: test.topic, difficulty: (test as any).difficulty || 'intermediate' })
     setShowModal(true)
   }
 
@@ -52,7 +52,7 @@ export default function AdminWritingPage() {
       })
       if (res.ok) {
         const data = await res.json()
-        setForm({ ...form, topic: data.topic })
+        setForm((prev) => ({ ...prev, topic: data.topic }))
         toast.success('AI generated a topic!')
       } else {
         toast.error('AI generation failed. Check Gemini API key.')
@@ -73,7 +73,7 @@ export default function AdminWritingPage() {
         const res = await fetch(`${API}/writing/tests/${editingTest.id}/`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
-          body: JSON.stringify({ task_type: form.task_type, topic: form.topic }),
+          body: JSON.stringify({ task_type: form.task_type, topic: form.topic, difficulty: form.difficulty }),
         })
         if (res.ok) {
           toast.success('Test updated!')
@@ -82,7 +82,7 @@ export default function AdminWritingPage() {
         }
       } else {
         // Create new
-        await api.createWritingTest({ task_type: form.task_type, topic: form.topic })
+        await api.createWritingTest({ task_type: form.task_type, topic: form.topic, difficulty: form.difficulty } as any)
         toast.success('Writing test created!')
       }
       setShowModal(false)
@@ -108,12 +108,12 @@ export default function AdminWritingPage() {
   return (
     <>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="min-w-0">
             <h1 className="text-2xl font-bold text-gray-900">Manage Writing Tests</h1>
             <p className="text-gray-500 mt-1">Create, edit, and manage writing test prompts</p>
           </div>
-          <Button onClick={openCreate}>
+          <Button onClick={openCreate} className="w-full sm:w-auto flex-shrink-0">
             <Plus className="h-4 w-4 mr-2" /> Create Writing Test
           </Button>
         </div>
@@ -148,12 +148,14 @@ export default function AdminWritingPage() {
                       <PenTool className="h-5 w-5 text-blue-600" />
                     </div>
                     <div className="min-w-0">
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2 flex-wrap">
                         <h3 className="font-semibold text-gray-900">{test.task_type === 'task1' ? 'Task 1' : 'Task 2'}</h3>
-                        <Badge variant={test.status === 'evaluated' ? 'success' : test.status === 'submitted' ? 'info' : 'default'}>{test.status}</Badge>
+                        <Badge variant={(test as any).difficulty === 'beginner' ? 'success' : (test as any).difficulty === 'pro' ? 'danger' : 'warning'}>
+                          {(test as any).difficulty || 'intermediate'}
+                        </Badge>
                       </div>
                       <p className="text-sm text-gray-500 mt-0.5 line-clamp-1">{test.topic}</p>
-                      <p className="text-xs text-gray-400">{formatDate(test.created_at)} &bull; by {test.user_name} &bull; {test.word_count} words</p>
+                      <p className="text-xs text-gray-400">{formatDate(test.created_at)} &bull; by {test.user_name}</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2 ml-4">

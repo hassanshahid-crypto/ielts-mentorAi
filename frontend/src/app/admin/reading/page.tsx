@@ -49,12 +49,12 @@ export default function AdminReadingPage() {
           correct_answer: q.correct_answer || '',
           order: q.order || i + 1,
         }))
-        setNewPassage({
-          ...newPassage,
+        setNewPassage((prev) => ({
+          ...prev,
           title: data.title || '',
           passage_text: data.passage_text || '',
-          questions: questions.length > 0 ? questions : newPassage.questions,
-        })
+          questions: questions.length > 0 ? questions : prev.questions,
+        }))
         toast.success('AI generated a passage with questions!')
       } else {
         const err = await res.json().catch(() => ({}))
@@ -137,12 +137,12 @@ export default function AdminReadingPage() {
   return (
     <>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="min-w-0">
             <h1 className="text-2xl font-bold text-gray-900">Manage Reading Tests</h1>
             <p className="text-gray-500 mt-1">Create, edit, and manage reading passages & questions</p>
           </div>
-          <Button onClick={() => setShowModal(true)} className="bg-purple-600 hover:bg-purple-700">
+          <Button onClick={() => setShowModal(true)} className="bg-purple-600 hover:bg-purple-700 w-full sm:w-auto flex-shrink-0">
             <Plus className="h-4 w-4 mr-2" /> Create Passage
           </Button>
         </div>

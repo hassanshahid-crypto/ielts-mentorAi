@@ -23,7 +23,7 @@ class SpeakingTestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SpeakingTest
-        fields = ['id', 'user', 'user_name', 'topic', 'part_number', 'status',
+        fields = ['id', 'user', 'user_name', 'topic', 'part_number', 'difficulty', 'set_id', 'theme', 'status',
                   'transcript', 'duration', 'feedback', 'audio_files',
                   'created_at', 'updated_at']
         read_only_fields = ['user', 'status', 'created_at', 'updated_at']
@@ -32,7 +32,7 @@ class SpeakingTestSerializer(serializers.ModelSerializer):
 class SpeakingTestCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = SpeakingTest
-        fields = ['topic', 'part_number']
+        fields = ['topic', 'part_number', 'difficulty', 'set_id', 'theme']
 
 
 class SpeakingTestSubmitSerializer(serializers.Serializer):

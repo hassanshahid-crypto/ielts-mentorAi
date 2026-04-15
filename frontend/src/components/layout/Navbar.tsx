@@ -219,10 +219,11 @@ export function Navbar() {
           <div className="px-4 py-3 space-y-0.5">
             {[
               { href: '/dashboard', label: 'Dashboard' },
-              { href: '/writing', label: 'Writing' },
-              { href: '/speaking', label: 'Speaking' },
-              { href: '/reading', label: 'Reading' },
-              { href: '/results', label: 'Results' },
+              { href: '/writing', label: 'Writing Lab' },
+              { href: '/speaking', label: 'Speaking Club' },
+              { href: '/reading', label: 'Reading Club' },
+              { href: '/results', label: 'Vocabulary' },
+              { href: '/performance', label: 'Performance' },
             ].map((link) => (
               <Link key={link.href} href={link.href} className="block px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl transition-all" onClick={() => setMobileOpen(false)}>
                 {link.label}

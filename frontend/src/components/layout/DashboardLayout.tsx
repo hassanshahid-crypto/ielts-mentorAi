@@ -35,8 +35,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       <Navbar />
       <Sidebar />
       <div className="pt-16 lg:pl-[220px]">
-        <div className="p-6 lg:p-8">
-          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 lg:p-8 min-h-[calc(100vh-7rem)]">
+        <div className="p-3 sm:p-6 lg:p-8">
+          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-7rem)]">
             {children}
           </div>
         </div>

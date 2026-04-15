@@ -41,8 +41,8 @@ export default function DashboardPage() {
   return (
     <div className="space-y-7">
       {/* Welcome Header */}
-      <div className="flex items-start justify-between gap-4">
-        <div>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+        <div className="min-w-0">
           <h1 className="text-2xl font-bold font-display text-gray-900 tracking-tight">
             Welcome back, {userName}!
           </h1>
@@ -62,23 +62,23 @@ export default function DashboardPage() {
           {/* Level Progression Card */}
           <div>
             {progress && !progress.is_max_level ? (
-              <div className="rounded-3xl bg-gradient-to-br from-[#5b4cdb] via-[#6c5ce7] to-[#8b7cf7] p-6 text-white relative overflow-hidden">
+              <div className="rounded-3xl bg-gradient-to-br from-[#5b4cdb] via-[#6c5ce7] to-[#8b7cf7] p-4 sm:p-6 text-white relative overflow-hidden">
                 {/* Background decorative elements */}
                 <div className="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full -translate-y-36 translate-x-36" />
                 <div className="absolute bottom-0 left-0 w-56 h-56 bg-white/5 rounded-full translate-y-28 -translate-x-28" />
 
                 <div className="relative z-10">
                   {/* Header row */}
-                  <div className="flex items-center justify-between mb-5">
-                    <div className="flex items-center gap-3">
-                      <div className="h-9 w-9 bg-white/15 rounded-xl flex items-center justify-center">
+                  <div className="flex items-center justify-between gap-2 mb-5 flex-wrap">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                      <div className="h-9 w-9 bg-white/15 rounded-xl flex items-center justify-center flex-shrink-0">
                         <TrendingUp className="h-4 w-4 text-white" />
                       </div>
-                      <span className="bg-white/15 text-white text-xs font-semibold px-3 py-1 rounded-full">Overall Progress</span>
+                      <span className="bg-white/15 text-white text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">Overall Progress</span>
                     </div>
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="text-3xl font-bold">{progress.overall_avg}</span>
-                      <span className="text-xs text-white/60">Target {progress.threshold}</span>
+                    <div className="flex items-baseline gap-1.5 flex-shrink-0">
+                      <span className="text-2xl sm:text-3xl font-bold">{progress.overall_avg}</span>
+                      <span className="text-xs text-white/60 whitespace-nowrap">Target {progress.threshold}</span>
                     </div>
                   </div>
 
@@ -103,26 +103,26 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Per-type stat cards */}
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
                     {[
                       { key: 'writing', label: 'WRITING', icon: PenTool, data: progress.writing },
                       { key: 'speaking', label: 'SPEAKING', icon: Mic, data: progress.speaking },
                       { key: 'reading', label: 'READING', icon: BookOpen, data: progress.reading },
-                    ].map(({ key, label, icon: Icon, data }) => (
-                      <div key={key} className="rounded-2xl p-4 bg-white/10 backdrop-blur-sm border border-white/10">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <Icon className="h-3.5 w-3.5 text-white/70" />
-                            <span className="text-[10px] font-bold text-white/70 tracking-wider">{label}</span>
+                    ].map(({ key, label, icon: Icon, data }, idx) => (
+                      <div key={key} className={`rounded-2xl p-2.5 sm:p-4 bg-white/10 backdrop-blur-sm border border-white/10 min-w-0 ${idx === 2 ? 'col-span-2 sm:col-span-1' : ''}`}>
+                        <div className="flex items-center justify-between gap-1 mb-2">
+                          <div className="flex items-center gap-1 sm:gap-2 min-w-0">
+                            <Icon className="h-3.5 w-3.5 text-white/70 flex-shrink-0" />
+                            <span className="text-[9px] sm:text-[10px] font-bold text-white/70 tracking-wider truncate">{label}</span>
                           </div>
                           {data.done ? (
-                            <CheckCircle className="h-4 w-4 text-emerald-300" />
+                            <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-300 flex-shrink-0" />
                           ) : (
-                            <Circle className="h-4 w-4 text-white/25" />
+                            <Circle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white/25 flex-shrink-0" />
                           )}
                         </div>
-                        <p className="text-2xl font-bold text-white">{data.done ? data.avg : '—'}</p>
-                        <p className="text-[11px] text-white/50 mt-0.5">
+                        <p className="text-xl sm:text-2xl font-bold text-white">{data.done ? data.avg : '—'}</p>
+                        <p className="text-[10px] sm:text-[11px] text-white/50 mt-0.5">
                           {data.count} {data.count === 1 ? 'test' : 'tests'} taken
                         </p>
                       </div>

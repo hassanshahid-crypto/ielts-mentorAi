@@ -93,12 +93,12 @@ export default function PerformancePage() {
     <DashboardLayout>
       <div className="space-y-8 animate-fade-in">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="min-w-0">
             <h1 className="text-2xl font-bold font-display text-gray-900">Performance</h1>
             <p className="text-gray-500 mt-1 text-sm">Track your IELTS progress and scores</p>
           </div>
-          <div className="flex items-center gap-2 bg-gray-100/80 p-1 rounded-xl">
+          <div className="flex items-center gap-2 bg-gray-100/80 p-1 rounded-xl flex-shrink-0 self-start sm:self-auto">
             {[7, 30, 90].map(d => (
               <button
                 key={d}
@@ -116,17 +116,17 @@ export default function PerformancePage() {
         </div>
 
         {/* Stat Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {statCards.map(({ label, value, icon: Icon, bg, color }) => (
-            <Card key={label} className="rounded-2xl border-gray-100 shadow-soft">
-              <CardBody className="p-5">
+            <Card key={label} className="rounded-2xl border-gray-100 shadow-soft min-w-0">
+              <CardBody className="p-3 sm:p-5">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className={`h-10 w-10 ${bg} rounded-xl flex items-center justify-center`}>
-                    <Icon className={`h-5 w-5 ${color}`} />
+                  <div className={`h-9 w-9 sm:h-10 sm:w-10 ${bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                    <Icon className={`h-4 w-4 sm:h-5 sm:w-5 ${color}`} />
                   </div>
                 </div>
-                <p className="text-2xl font-bold font-display text-gray-900">{value}</p>
-                <p className="text-xs text-gray-400 mt-1">{label}</p>
+                <p className="text-base sm:text-2xl font-bold font-display text-gray-900 break-words leading-tight">{value}</p>
+                <p className="text-xs text-gray-400 mt-1 break-words">{label}</p>
               </CardBody>
             </Card>
           ))}
@@ -212,7 +212,7 @@ export default function PerformancePage() {
         </div>
 
         {/* Total Tests Summary */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-3 sm:gap-4">
           {[
             {
               label: 'Total Tests',
@@ -243,13 +243,13 @@ export default function PerformancePage() {
               gradient: 'from-amber-500 to-orange-600',
             },
           ].map(({ label, value, icon: Icon, gradient }) => (
-            <Card key={label} className="rounded-2xl border-gray-100 shadow-soft overflow-hidden relative group hover:shadow-md transition-all">
-              <CardBody className="p-5 relative z-10">
-                <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center mb-3 shadow-sm`}>
-                  <Icon className="h-5 w-5 text-white" />
+            <Card key={label} className="rounded-2xl border-gray-100 shadow-soft overflow-hidden relative group hover:shadow-md transition-all min-w-0">
+              <CardBody className="p-3 sm:p-5 relative z-10">
+                <div className={`h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center mb-3 shadow-sm flex-shrink-0`}>
+                  <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                 </div>
-                <p className="text-2xl font-bold font-display text-gray-900">{value}</p>
-                <p className="text-xs text-gray-400 mt-1 font-medium">{label}</p>
+                <p className="text-base sm:text-2xl font-bold font-display text-gray-900 break-words leading-tight">{value}</p>
+                <p className="text-xs text-gray-400 mt-1 font-medium break-words">{label}</p>
               </CardBody>
               <div className={`absolute -right-6 -bottom-6 h-24 w-24 rounded-full bg-gradient-to-br ${gradient} opacity-[0.06] group-hover:opacity-[0.1] transition-opacity`} />
             </Card>

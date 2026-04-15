@@ -15,7 +15,7 @@ class WritingTestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WritingTest
-        fields = ['id', 'user', 'user_name', 'task_type', 'topic', 'instructions',
+        fields = ['id', 'user', 'user_name', 'task_type', 'topic', 'instructions', 'difficulty',
                   'writing_text', 'word_count', 'time_spent', 'status',
                   'feedback', 'created_at', 'updated_at']
         read_only_fields = ['user', 'status', 'created_at', 'updated_at']
@@ -24,7 +24,7 @@ class WritingTestSerializer(serializers.ModelSerializer):
 class WritingTestCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = WritingTest
-        fields = ['task_type', 'topic', 'instructions']
+        fields = ['task_type', 'topic', 'instructions', 'difficulty']
 
 
 class WritingTestSubmitSerializer(serializers.Serializer):

@@ -23,14 +23,14 @@ export default function SpeakingPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6 animate-fade-in">
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="min-w-0">
             <h1 className="text-2xl font-display font-bold text-gray-900">Speaking Practice</h1>
             <p className="text-gray-500 mt-1">{user?.role === 'admin' ? 'Manage all speaking tests' : 'Your IELTS Speaking practice history'}</p>
           </div>
           {user?.role === 'student' && (
-            <Link href="/speaking/new">
-              <Button variant="secondary" className="rounded-xl"><Plus className="h-4 w-4 mr-2" /> Practice Now</Button>
+            <Link href="/speaking/new" className="flex-shrink-0">
+              <Button variant="secondary" className="rounded-xl w-full sm:w-auto"><Plus className="h-4 w-4 mr-2" /> Practice Now</Button>
             </Link>
           )}
         </div>

@@ -13,10 +13,17 @@ class WritingTest(models.Model):
         ('evaluated', 'Evaluated'),
     )
 
+    DIFFICULTY_CHOICES = (
+        ('beginner', 'Beginner'),
+        ('intermediate', 'Intermediate'),
+        ('pro', 'Pro'),
+    )
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='writing_tests')
     task_type = models.CharField(max_length=5, choices=TASK_TYPE_CHOICES)
     topic = models.TextField()
     instructions = models.TextField(blank=True)
+    difficulty = models.CharField(max_length=15, choices=DIFFICULTY_CHOICES, default='intermediate')
     writing_text = models.TextField(blank=True)
     word_count = models.IntegerField(default=0)
     time_spent = models.IntegerField(default=0, help_text='Time spent in seconds')

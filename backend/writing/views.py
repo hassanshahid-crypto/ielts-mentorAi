@@ -73,7 +73,7 @@ class WritingTestListCreateView(APIView):
 
     def get(self, request):
         if request.user.role == 'admin':
-            tests = WritingTest.objects.all()
+            tests = WritingTest.objects.filter(user__role='admin')
         else:
             tests = WritingTest.objects.filter(user=request.user)
         task_type = request.query_params.get('task_type')
@@ -88,6 +88,22 @@ class WritingTestListCreateView(APIView):
             test = serializer.save(user=request.user)
             return Response(WritingTestSerializer(test).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class WritingTemplatesView(APIView):
+    """Return admin-created writing prompts filtered by difficulty + task_type."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        templates = WritingTest.objects.filter(user__role='admin')
+        difficulty = request.query_params.get('difficulty') or getattr(request.user, 'difficulty_level', None)
+        if difficulty:
+            templates = templates.filter(difficulty=difficulty)
+        task_type = request.query_params.get('task_type')
+        if task_type:
+            templates = templates.filter(task_type=task_type)
+        serializer = WritingTestSerializer(templates, many=True)
+        return Response(serializer.data)
 
 
 class WritingTestDetailView(APIView):

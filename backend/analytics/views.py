@@ -157,9 +157,21 @@ class AdminStudentListView(APIView):
 
 
 class AdminStudentDetailView(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+        if request.user.role != 'admin':
+            return Response({'error': 'Forbidden.'}, status=403)
+        try:
+            student = User.objects.get(pk=pk, role='student')
+        except User.DoesNotExist:
+            return Response({'error': 'Student not found.'}, status=404)
+        student.delete()
+        return Response(status=204)
 
     def get(self, request, pk):
+        if request.user.role != 'admin':
+            return Response({'error': 'Forbidden.'}, status=403)
         student = User.objects.get(pk=pk, role='student')
 
         writing_tests = WritingTest.objects.filter(user=student, status='evaluated').select_related('feedback')

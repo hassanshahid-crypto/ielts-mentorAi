@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { api } from '@/lib/api'
+import { useAuth } from '@/context/AuthContext'
 import { Card, CardBody, CardHeader, Badge, Spinner, Button } from '@/components/ui'
 import { formatDate, formatBandScore, formatTime, getBandBgColor } from '@/lib/utils'
 import { ArrowLeft, PenTool, Clock, FileText, Lightbulb } from 'lucide-react'
@@ -12,8 +13,10 @@ import type { WritingTest } from '@/types'
 
 export default function WritingTestDetailPage() {
   const params = useParams()
+  const { user } = useAuth()
   const [test, setTest] = useState<WritingTest | null>(null)
   const [loading, setLoading] = useState(true)
+  const backHref = user?.role === 'admin' ? '/admin/writing' : '/writing'
 
   useEffect(() => {
     if (params.id) {
@@ -31,7 +34,7 @@ export default function WritingTestDetailPage() {
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Link href="/writing"><Button variant="ghost" size="sm"><ArrowLeft className="h-4 w-4 mr-1" /> Back</Button></Link>
+            <Link href={backHref}><Button variant="ghost" size="sm"><ArrowLeft className="h-4 w-4 mr-1" /> Back</Button></Link>
             <div>
               <h1 className="text-xl font-bold text-gray-900">Writing {test.task_type === 'task1' ? 'Task 1' : 'Task 2'}</h1>
               <p className="text-sm text-gray-500">{formatDate(test.created_at)}</p>

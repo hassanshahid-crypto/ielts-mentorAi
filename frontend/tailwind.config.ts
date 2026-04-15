@@ -12,6 +12,19 @@ const config: Config = {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
         display: ['var(--font-jakarta)', 'system-ui', 'sans-serif'],
       },
+      fontSize: {
+        'xs':   ['clamp(0.65rem, 0.62rem + 0.15vw, 0.75rem)',  { lineHeight: '1rem' }],
+        'sm':   ['clamp(0.74rem, 0.70rem + 0.20vw, 0.875rem)', { lineHeight: '1.2rem' }],
+        'base': ['clamp(0.80rem, 0.74rem + 0.30vw, 1rem)',     { lineHeight: '1.45rem' }],
+        'lg':   ['clamp(0.86rem, 0.78rem + 0.40vw, 1.125rem)', { lineHeight: '1.55rem' }],
+        'xl':   ['clamp(0.92rem, 0.82rem + 0.50vw, 1.25rem)',  { lineHeight: '1.5' }],
+        '2xl':  ['clamp(1.00rem, 0.86rem + 0.70vw, 1.5rem)',   { lineHeight: '1.4' }],
+        '3xl':  ['clamp(1.10rem, 0.92rem + 0.95vw, 1.875rem)', { lineHeight: '1.35' }],
+        '4xl':  ['clamp(1.25rem, 1.00rem + 1.30vw, 2.25rem)',  { lineHeight: '1.25' }],
+        '5xl':  ['clamp(1.45rem, 1.10rem + 1.80vw, 3rem)',     { lineHeight: '1.2' }],
+        '6xl':  ['clamp(1.65rem, 1.20rem + 2.30vw, 3.75rem)',  { lineHeight: '1.15' }],
+        '7xl':  ['clamp(1.85rem, 1.30rem + 2.80vw, 4.5rem)',   { lineHeight: '1.1' }],
+      },
       colors: {
         primary: {
           50: '#eef2ff',

@@ -109,10 +109,51 @@ class ApiClient {
     return this.request(`/writing/tests/${id}/`, { method: 'DELETE' })
   }
 
+  async getWritingTemplates(params: { task_type?: string; difficulty?: string } = {}): Promise<WritingTest[]> {
+    const q = new URLSearchParams()
+    if (params.task_type) q.set('task_type', params.task_type)
+    if (params.difficulty) q.set('difficulty', params.difficulty)
+    const query = q.toString() ? `?${q.toString()}` : ''
+    return this.request(`/writing/templates/${query}`)
+  }
+
   // Speaking
   async getSpeakingTests(part?: number): Promise<SpeakingTest[]> {
     const query = part ? `?part=${part}` : ''
     return this.request(`/speaking/tests/${query}`)
+  }
+
+  async getSpeakingTemplates(params: { part?: number; difficulty?: string } = {}): Promise<SpeakingTest[]> {
+    const q = new URLSearchParams()
+    if (params.part) q.set('part', String(params.part))
+    if (params.difficulty) q.set('difficulty', params.difficulty)
+    const query = q.toString() ? `?${q.toString()}` : ''
+    return this.request(`/speaking/templates/${query}`)
+  }
+
+  async getSpeakingTestSet(difficulty?: string): Promise<{ set_id: string | null; theme: string; parts: SpeakingTest[] }> {
+    const query = difficulty ? `?difficulty=${difficulty}` : ''
+    return this.request(`/speaking/test-set/${query}`)
+  }
+
+  async generateSpeakingTestSet(difficulty: string): Promise<{ theme: string; part1: string; part2: string; part3: string }> {
+    return this.request('/speaking/generate-test-set/', { method: 'POST', body: JSON.stringify({ difficulty }) })
+  }
+
+  async createSpeakingTestSet(data: { difficulty: string; theme: string; part1: string; part2: string; part3: string }): Promise<any> {
+    return this.request('/speaking/test-set/create/', { method: 'POST', body: JSON.stringify(data) })
+  }
+
+  async submitSpeakingSession(data: {
+    set_id: string
+    part1_transcript: string
+    part2_transcript: string
+    part3_transcript: string
+    part1_duration?: number
+    part2_duration?: number
+    part3_duration?: number
+  }): Promise<{ session_id: string; theme: string; canonical_test_id: number; feedback: any }> {
+    return this.request('/speaking/session/submit/', { method: 'POST', body: JSON.stringify(data) })
   }
 
   async getSpeakingTest(id: number): Promise<SpeakingTest> {
@@ -181,6 +222,10 @@ class ApiClient {
 
   async adminGetStudent(id: number): Promise<any> {
     return this.request(`/analytics/admin/students/${id}/`)
+  }
+
+  async adminDeleteStudent(id: number): Promise<void> {
+    return this.request(`/analytics/admin/students/${id}/`, { method: 'DELETE' })
   }
 
   async adminOverview(): Promise<AdminOverview> {
